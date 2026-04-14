@@ -729,14 +729,32 @@ def query(req: func.HttpRequest) -> func.HttpResponse:
             if not columns:
                 return False
             q_lower = query.lower()
-            # Extract words from query (simple split, no regex needed)
-            q_words = set(w.strip(".,!?;:") for w in q_lower.split() if len(w) > 2)
+            # Extract meaningful words from query (3+ chars)
+            q_words = set(w.strip(".,!?;:()") for w in q_lower.split() if len(w) >= 3)
+
+            # Common aggregation/math keywords — if present, try the query engine
+            # regardless of column match (user is asking for computation)
+            agg_keywords = {"sum", "total", "average", "avg", "count", "max", "min",
+                            "mean", "how many", "number of", "add up", "calculate"}
+            if any(kw in q_lower for kw in agg_keywords):
+                # Still need at least one column word to match to avoid wrong doc
+                # Use a looser check for aggregation queries
+                for col in columns:
+                    col_lower = col.lower()
+                    col_words = set(w.strip(".,!?;:()") for w in col_lower.split() if len(w) >= 3)
+                    # Check if any query word is a substring of any column word or vice versa
+                    for qw in q_words:
+                        for cw in col_words:
+                            if qw in cw or cw in qw:
+                                return True
+
+            # Standard check: direct word overlap
             for col in columns:
                 col_lower = col.lower()
-                col_words = set(w.strip(".,!?;:") for w in col_lower.split() if len(w) > 2)
+                col_words = set(w.strip(".,!?;:()") for w in col_lower.split() if len(w) >= 3)
                 if q_words & col_words:
                     return True
-                # Also check if any query word appears in the column name
+                # Substring check
                 for qw in q_words:
                     if qw in col_lower:
                         return True
