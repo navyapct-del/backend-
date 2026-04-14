@@ -1,0 +1,12 @@
+venv
+.venv
+__pycache__
+*.pyc
+*.pyo
+.git
+.gitignore
+local.settings.json
+start.ps1
+*.sql
+*.md
+.python-version

@@ -1,0 +1,17 @@
+# Secrets
+.env
+.env.*
+local.settings.json
+azure_upload_function/local.settings.json
+
+# Node
+node_modules/
+dist/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS
+.DS_Store
