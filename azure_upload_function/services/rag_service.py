@@ -9,7 +9,7 @@ class RAGService:
     def __init__(self):
         endpoint   = os.getenv("AZURE_OPENAI_ENDPOINT")
         api_key    = os.getenv("AZURE_OPENAI_API_KEY")
-        deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME", "gpt-4o-mini")
+        deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME", "gpt-4o")
 
         if not endpoint or not api_key:
             raise EnvironmentError(
